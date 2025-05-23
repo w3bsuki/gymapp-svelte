@@ -1,0 +1,291 @@
+<script>
+  import Button from '$components/ui/button/button.svelte';
+  import Card from '$components/ui/card/card.svelte';
+  import CardContent from '$components/ui/card/card-content.svelte';
+  import CardDescription from '$components/ui/card/card-description.svelte';
+
+  // Temporary mock data for courses
+  const courses = [
+    {
+      id: '1',
+      title: 'Complete Body Transformation',
+      description: 'A comprehensive 12-week program for total body transformation. Suitable for all fitness levels.',
+      imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
+      price: 99.99,
+      discountPrice: 79.99,
+      difficulty: 'Intermediate',
+      duration: 720,
+      category: 'Transformation'
+    },
+    {
+      id: '2',
+      title: 'Strength Training Fundamentals',
+      description: 'Master the basics of strength training with proper form and technique. Build a solid foundation for your fitness journey.',
+      imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
+      price: 69.99,
+      difficulty: 'Beginner',
+      duration: 480,
+      category: 'Strength'
+    },
+    {
+      id: '3',
+      title: 'Advanced HIIT Workouts',
+      description: 'High-intensity interval training for experienced fitness enthusiasts. Take your conditioning to the next level.',
+      imageUrl: 'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
+      price: 89.99,
+      difficulty: 'Advanced',
+      duration: 600,
+      category: 'HIIT'
+    },
+    {
+      id: '4',
+      title: 'Nutrition Mastery',
+      description: 'Learn how to fuel your body for optimal performance and recovery. Includes meal plans and recipes.',
+      imageUrl: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      price: 59.99,
+      difficulty: 'Beginner',
+      duration: 300,
+      category: 'Nutrition'
+    },
+    {
+      id: '5',
+      title: 'Flexibility & Mobility',
+      description: 'Improve your range of motion, prevent injuries, and enhance performance with targeted mobility work.',
+      imageUrl: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      price: 49.99,
+      difficulty: 'Beginner',
+      duration: 240,
+      category: 'Mobility'
+    },
+    {
+      id: '6',
+      title: 'Powerlifting Specialization',
+      description: 'Build maximal strength in the squat, bench, and deadlift with this specialized powerlifting program.',
+      imageUrl: 'https://images.unsplash.com/photo-1584466977773-e625c37cdd50?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1587&q=80',
+      price: 89.99,
+      difficulty: 'Advanced',
+      duration: 720,
+      category: 'Strength'
+    },
+    {
+      id: '7',
+      title: 'Yoga for Athletes',
+      description: 'Complement your training with yoga practices designed specifically for athletes. Improve recovery, balance, and mental focus.',
+      imageUrl: 'https://images.unsplash.com/photo-1588286840104-8957b019727f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      price: 59.99,
+      difficulty: 'Intermediate',
+      duration: 360,
+      category: 'Yoga'
+    },
+    {
+      id: '8',
+      title: 'Bodyweight Mastery',
+      description: 'Build strength, muscle, and athleticism using just your bodyweight. Perfect for home workouts or when traveling.',
+      imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      price: 69.99,
+      difficulty: 'Intermediate',
+      duration: 480,
+      category: 'Bodyweight'
+    },
+    {
+      id: '9',
+      title: 'Marathon Training',
+      description: 'A complete 16-week program to prepare for your first marathon or improve your marathon time.',
+      imageUrl: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+      price: 79.99,
+      difficulty: 'Advanced',
+      duration: 960,
+      category: 'Running'
+    }
+  ];
+  
+  // Get unique categories for filter dropdown
+  const categories = [...new Set(courses.map(course => course.category))].sort();
+  
+  // Get unique difficulty levels for filter dropdown
+  const difficultyLevels = [...new Set(courses.map(course => course.difficulty))].sort();
+  
+  // Filter state
+  let searchQuery = '';
+  let selectedCategory = '';
+  let selectedDifficulty = '';
+  
+  // Computed: filtered courses
+  $: filteredCourses = courses.filter(course => {
+    // Apply category filter
+    if (selectedCategory && course.category !== selectedCategory) {
+      return false;
+    }
+    
+    // Apply difficulty filter
+    if (selectedDifficulty && course.difficulty !== selectedDifficulty) {
+      return false;
+    }
+    
+    // Apply search filter
+    if (searchQuery && !course.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
+        !course.description.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    
+    return true;
+  });
+  
+  // Format price with currency
+  function formatPrice(price) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
+  }
+</script>
+
+<svelte:head>
+  <title>Courses | FitTrainer</title>
+  <meta name="description" content="Browse our selection of professional fitness courses. From beginner to advanced, find the perfect program for your fitness goals." />
+</svelte:head>
+
+<section class="py-12">
+  <div class="container mx-auto px-4">
+    <div class="mb-12 text-center">
+      <h1 class="text-4xl font-bold mb-4">Fitness Courses</h1>
+      <p class="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+        Explore our expert-designed courses to elevate your fitness journey. Each course provides comprehensive instruction, personalized guidance, and a supportive community.
+      </p>
+    </div>
+    
+    <!-- Filters -->
+    <div class="mb-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Filter Courses</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Search</label>
+          <input
+            type="text"
+            id="search"
+            placeholder="Search courses..."
+            bind:value={searchQuery}
+            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        
+        <div>
+          <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Category</label>
+          <select
+            id="category"
+            bind:value={selectedCategory}
+            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white"
+          >
+            <option value="">All Categories</option>
+            {#each categories as category}
+              <option value={category}>{category}</option>
+            {/each}
+          </select>
+        </div>
+        
+        <div>
+          <label for="difficulty" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Difficulty</label>
+          <select
+            id="difficulty"
+            bind:value={selectedDifficulty}
+            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary focus:border-primary dark:bg-gray-700 dark:text-white"
+          >
+            <option value="">All Levels</option>
+            {#each difficultyLevels as level}
+              <option value={level}>{level}</option>
+            {/each}
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Course Results -->
+    <div class="mb-6 flex justify-between items-center">
+      <h2 class="text-xl font-semibold">{filteredCourses.length} {filteredCourses.length === 1 ? 'Course' : 'Courses'}</h2>
+      
+      <!-- Sorting options could be added here -->
+    </div>
+    
+    {#if filteredCourses.length === 0}
+      <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="text-xl font-semibold mb-2">No courses found</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          Try adjusting your filters or search terms.
+        </p>
+        <Button 
+          on:click={() => { selectedCategory = ''; selectedDifficulty = ''; searchQuery = ''; }}
+          variant="default"
+        >
+          Clear Filters
+        </Button>
+      </div>
+    {:else}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {#each filteredCourses as course}
+          <Card class="h-full flex flex-col">
+            <div class="relative pb-[56.25%]">
+              <img 
+                src={course.imageUrl} 
+                alt={course.title}
+                class="absolute inset-0 w-full h-full object-cover rounded-t-lg"
+              />
+              {#if course.discountPrice}
+                <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                  SALE
+                </div>
+              {/if}
+              <div class="absolute bottom-2 left-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-medium">
+                {course.category}
+              </div>
+            </div>
+            
+            <CardContent class="flex-1 flex flex-col">
+              <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-medium">
+                  {course.difficulty}
+                </span>
+                <span class="mx-2">•</span>
+                <span>{course.duration} mins</span>
+              </div>
+              
+              <h3 class="text-xl font-bold mb-2">{course.title}</h3>
+              <CardDescription class="mb-4 flex-1">{course.description}</CardDescription>
+              
+              <div class="mt-auto">
+                {#if course.discountPrice}
+                  <div class="flex items-center mb-2">
+                    <span class="text-xl font-bold">{formatPrice(course.discountPrice)}</span>
+                    <span class="ml-2 text-gray-500 line-through">{formatPrice(course.price)}</span>
+                  </div>
+                {:else}
+                  <div class="text-xl font-bold mb-2">{formatPrice(course.price)}</div>
+                {/if}
+                
+                <Button href={`/courses/${course.id}`} variant="default" class="w-full">
+                  View Course
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        {/each}
+      </div>
+    {/if}
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-16 bg-gray-100 dark:bg-gray-900/50">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold mb-4">Can't Find What You're Looking For?</h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-3xl mx-auto">
+      We offer personalized training programs tailored to your specific goals and needs.
+    </p>
+    <a href="/contact" class="inline-block bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-md font-semibold transition">
+      Contact Us for Custom Programs
+    </a>
+  </div>
+</section>
