@@ -1,164 +1,310 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { fade, fly, scale } from 'svelte/transition';
+  import { elasticOut } from 'svelte/easing';
   import Button from '$lib/components/ui/button/button.svelte';
   import Card from '$lib/components/ui/card/card.svelte';
   import CardContent from '$lib/components/ui/card/card-content.svelte';
   import CardDescription from '$lib/components/ui/card/card-description.svelte';
+  
+  // Add these for enhanced interactivity
+  import { writable } from 'svelte/store';
+  
+  let mounted = false;
+  let dashboardVisible = false;
+  
+  // Enhanced state management
+  const selectedTimeframe = writable('week');
+  const showNotifications = writable(false);
 
-  // Temporary mock data for featured courses
-  const featuredCourses = [
+  onMount(() => {
+    mounted = true;
+    setTimeout(() => dashboardVisible = true, 100);
+  });
+
+  // Dashboard data for social fitness app
+  const quickStats = [
+    { label: 'Workouts This Week', value: '12', icon: '🏋️', change: '+3', trend: 'up' },
+    { label: 'Calories Burned', value: '2,847', icon: '🔥', change: '+247', trend: 'up' },
+    { label: 'Active Streak', value: '15 days', icon: '⚡', change: '+1', trend: 'up' },
+    { label: 'Community Rank', value: '#47', icon: '🏆', change: '+12', trend: 'up' }
+  ];
+
+  const recentActivity = [
     {
-      id: '1',
-      title: 'Complete Body Transformation',
-      description: 'A comprehensive 12-week program for total body transformation. Suitable for all fitness levels.',
-      imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
-      price: 99.99,
-      discountPrice: 79.99,
-      difficulty: 'Intermediate',
-      duration: 720
+      type: 'workout',
+      title: 'Completed Upper Body Strength',
+      time: '2 hours ago',
+      icon: '💪',
+      user: 'You'
     },
     {
-      id: '2',
-      title: 'Strength Training Fundamentals',
-      description: 'Master the basics of strength training with proper form and technique. Build a solid foundation for your fitness journey.',
-      imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
-      price: 69.99,
-      difficulty: 'Beginner',
-      duration: 480
+      type: 'social',
+      title: 'Sarah liked your progress photo',
+      time: '4 hours ago',
+      icon: '❤️',
+      user: 'Sarah M.'
     },
     {
-      id: '3',
-      title: 'Advanced HIIT Workouts',
-      description: 'High-intensity interval training for experienced fitness enthusiasts. Take your conditioning to the next level.',
-      imageUrl: 'https://images.unsplash.com/photo-1549060279-7e168fcee0c2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80',
-      price: 89.99,
-      difficulty: 'Advanced',
-      duration: 600
+      type: 'achievement',
+      title: 'Earned "Consistency King" badge',
+      time: '1 day ago',
+      icon: '🏅',
+      user: 'You'
+    },
+    {
+      type: 'community',
+      title: 'New message in Motivation channel',
+      time: '2 days ago',
+      icon: '💬',
+      user: 'Mike T.'
     }
   ];
-  // Format price with currency
-  function formatPrice(price: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  }
+
+  const upcomingWorkouts = [
+    {
+      title: 'HIIT Cardio Blast',
+      time: 'Today, 6:00 PM',
+      trainer: 'Alex Rodriguez',
+      participants: 23,
+      difficulty: 'High'
+    },
+    {
+      title: 'Yoga Flow & Flexibility',
+      time: 'Tomorrow, 7:00 AM',
+      trainer: 'Emma Chen',
+      participants: 15,
+      difficulty: 'Medium'
+    },
+    {
+      title: 'Strength Training Basics',
+      time: 'Tomorrow, 8:00 PM',
+      trainer: 'Marcus Johnson',
+      participants: 31,
+      difficulty: 'Beginner'
+    }
+  ];
+
+  const trendingChallenges = [
+    {
+      title: '30-Day Plank Challenge',
+      participants: 1247,
+      daysLeft: 12,
+      reward: '🏆 Champion Badge',
+      progress: 67
+    },
+    {
+      title: 'Summer Shred 2024',
+      participants: 892,
+      daysLeft: 45,
+      reward: '🎁 Premium Gear',
+      progress: 23
+    }
+  ];
+
+  // Add interactive chart data
+  const weeklyProgress = [
+    { day: 'Mon', workouts: 2, calories: 450 },
+    { day: 'Tue', workouts: 1, calories: 320 },
+    { day: 'Wed', workouts: 3, calories: 680 },
+    { day: 'Thu', workouts: 2, calories: 520 },
+    { day: 'Fri', workouts: 1, calories: 380 },
+    { day: 'Sat', workouts: 2, calories: 590 },
+    { day: 'Sun', workouts: 1, calories: 290 }
+  ];
 </script>
 
 <svelte:head>
-	<title>FitTrainer - Professional Fitness Training & Community</title>
-	<meta name="description" content="Professional fitness training, online courses, and community for all fitness levels. Transform your body and life with expert guidance." />
+	<title>Dashboard - FitTrainer Social</title>
+	<meta name="description" content="Your personal fitness dashboard with social features, workout tracking, and community engagement." />
 </svelte:head>
 
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-r from-blue-900 to-purple-900 text-white">
-  <div class="absolute inset-0 overflow-hidden">
-    <img 
-      src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" 
-      alt="Fitness Background" 
-      class="w-full h-full object-cover opacity-20"
-    />
-  </div>
-  
-  <div class="container mx-auto px-4 py-24 relative z-10">
-    <div class="max-w-3xl">
-      <h1 class="text-5xl md:text-6xl font-bold mb-4">
-        Transform Your Body, Transform Your Life
-      </h1>
-      <p class="text-xl md:text-2xl mb-8 text-blue-100">
-        Professional training programs, expert guidance, and a supportive community to help you achieve your fitness goals.
-      </p>
-      <div class="flex flex-wrap gap-4">
-        <Button href="/courses" variant="default" size="lg">
-          Explore Courses
-        </Button>
-        <Button href="/community" variant="outline" size="lg">
-          Join Community
-        </Button>
+{#if dashboardVisible}
+  <div class="p-6 space-y-6" in:fade={{ duration: 600 }}>
+    <!-- Enhanced Welcome Section with Live Stats -->
+    <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white relative overflow-hidden" in:fly={{ y: 30, duration: 800 }}>
+      <!-- Animated background elements -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-4 right-4 w-32 h-32 bg-white rounded-full animate-pulse"></div>
+        <div class="absolute bottom-4 left-4 w-24 h-24 bg-white rounded-full animate-bounce"></div>
+      </div>
+      
+      <div class="relative z-10 flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">Welcome back, John! 👋</h1>
+          <p class="text-blue-100 text-lg">Ready to crush your fitness goals today?</p>
+          <!-- Add live motivation quote -->
+          <p class="text-blue-200 text-sm mt-2 italic">"Every workout is progress, no matter how small"</p>
+        </div>
+        <div class="hidden md:flex space-x-4">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold">15</div>
+            <div class="text-sm text-blue-100">Day Streak</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold">🔥</div>
+            <div class="text-sm text-blue-100">On Fire!</div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Featured Courses Section -->
-<section class="py-20 bg-gray-50 dark:bg-gray-900/50">
-  <div class="container mx-auto px-4">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold mb-4">Featured Courses</h2>
-      <p class="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto text-lg">
-        Transform your fitness journey with our expert-led courses. From beginners to advanced athletes, we have programs for every level.
-      </p>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {#each featuredCourses as course}
-        <Card class="h-full flex flex-col">
-          <div class="relative pb-[56.25%]">
-            <img 
-              src={course.imageUrl} 
-              alt={course.title}
-              class="absolute inset-0 w-full h-full object-cover rounded-t-lg"
-            />
-            {#if course.discountPrice}
-              <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                SALE
-              </div>
-            {/if}
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {#each quickStats as stat, i}
+        <div class="p-6 hover:shadow-lg transition-all duration-300 transform hover:scale-105 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm" in:fly={{ y: 50, delay: i * 100, duration: 600 }}>
+          <!-- Move the card content directly here without the Card component -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+            </div>
+            <div class="text-3xl">{stat.icon}</div>
           </div>
-          
-          <CardContent class="flex-1 flex flex-col">
-            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
-              <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-medium">
-                {course.difficulty}
-              </span>
-              <span class="mx-2">•</span>
-              <span>{course.duration} mins</span>
-            </div>
-            
-            <h3 class="text-xl font-bold mb-2">{course.title}</h3>
-            <CardDescription class="mb-4 flex-1">{course.description}</CardDescription>
-            
-            <div class="mt-auto">
-              {#if course.discountPrice}
-                <div class="flex items-center mb-2">
-                  <span class="text-xl font-bold">{formatPrice(course.discountPrice)}</span>
-                  <span class="ml-2 text-gray-500 line-through">{formatPrice(course.price)}</span>
-                </div>
-              {:else}
-                <div class="text-xl font-bold mb-2">{formatPrice(course.price)}</div>
-              {/if}
-              
-              <Button href={`/courses/${course.id}`} variant="default" class="w-full">View Course</Button>
-            </div>
-          </CardContent>
-        </Card>
+          <div class="mt-4 flex items-center">
+            <span class="text-sm font-medium text-green-600 dark:text-green-400">{stat.change}</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">vs last week</span>
+          </div>
+        </div>
       {/each}
     </div>
-    
-    <div class="text-center mt-12">
-      <Button href="/courses" variant="outline" size="lg">
-        View All Courses
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </Button>
-    </div>
-  </div>
-</section>
 
-<!-- Call to Action Section -->
-<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-  <div class="container mx-auto px-4 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Fitness Journey?</h2>
-    <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-      Join our community today and get access to expert-led courses, personalized workout plans, and a supportive community to help you reach your goals.
-    </p>
-    <div class="flex flex-wrap justify-center gap-4">
-      <Button href="/courses" variant="default" size="lg" class="bg-white text-primary hover:bg-gray-100">
-        Explore Courses
+    <!-- Main Dashboard Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Weekly Progress Chart -->
+      <div class="lg:col-span-2">
+        <Card class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold flex items-center">
+              <span class="mr-2">📈</span>
+              Weekly Progress
+            </h2>
+            <div class="flex space-x-2">
+              <Button variant="outline" size="sm" class="text-xs">Week</Button>
+              <Button variant="ghost" size="sm" class="text-xs">Month</Button>
+            </div>
+          </div>
+          
+          <!-- Simple bar chart using CSS -->
+          <div class="space-y-3">
+            {#each weeklyProgress as day, i}
+              <div class="flex items-center space-x-3" in:fly={{ x: -20, delay: i * 50, duration: 400 }}>
+                <div class="w-8 text-sm font-medium text-gray-600">{day.day}</div>
+                <div class="flex-1 flex items-center space-x-2">
+                  <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3 relative overflow-hidden">
+                    <div 
+                      class="bg-gradient-to-r from-blue-500 to-purple-600 h-full rounded-full transition-all duration-1000 ease-out"
+                      style="width: {(day.workouts / 3) * 100}%"
+                    ></div>
+                  </div>
+                  <div class="text-sm font-medium w-16">{day.workouts} workouts</div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </Card>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="lg:col-span-2">
+        <Card class="p-6">
+          <h2 class="text-xl font-bold mb-4 flex items-center">
+            <span class="mr-2">📱</span>
+            Recent Activity
+          </h2>
+          <div class="space-y-4">
+            {#each recentActivity as activity, i}
+              <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" in:fly={{ x: -30, delay: i * 100, duration: 500 }}>
+                <div class="text-2xl">{activity.icon}</div>
+                <div class="flex-1">
+                  <p class="font-medium text-gray-900 dark:text-white">{activity.title}</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{activity.user} • {activity.time}</p>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </Card>
+      </div>
+
+      <!-- Upcoming Workouts -->
+      <div>
+        <Card class="p-6">
+          <h2 class="text-xl font-bold mb-4 flex items-center">
+            <span class="mr-2">⏰</span>
+            Upcoming Workouts
+          </h2>
+          <div class="space-y-4">
+            {#each upcomingWorkouts as workout, i}
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow" in:scale={{ delay: i * 150, duration: 500 }}>
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{workout.title}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{workout.time}</p>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-gray-500">with {workout.trainer}</span>
+                  <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                    {workout.participants} joined
+                  </span>
+                </div>
+              </div>
+            {/each}
+          </div>
+          <Button href="/workouts" variant="outline" class="w-full mt-4">
+            View All Workouts
+          </Button>
+        </Card>
+      </div>
+    </div>
+
+    <!-- Trending Challenges -->
+    <Card class="p-6">
+      <h2 class="text-xl font-bold mb-4 flex items-center">
+        <span class="mr-2">🔥</span>
+        Trending Challenges
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {#each trendingChallenges as challenge, i}
+          <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-all duration-300" in:fly={{ y: 30, delay: i * 200, duration: 600 }}>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-gray-900 dark:text-white">{challenge.title}</h3>
+              <span class="text-2xl">{challenge.reward.split(' ')[0]}</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600 dark:text-gray-400">{challenge.participants.toLocaleString()} participants</span>
+                <span class="text-gray-600 dark:text-gray-400">{challenge.daysLeft} days left</span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500" style="width: {challenge.progress}%"></div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">{challenge.progress}% complete</span>
+                <Button href="/challenges/{challenge.title.toLowerCase().replace(/\s+/g, '-')}" size="sm">
+                  Join Challenge
+                </Button>
+              </div>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </Card>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <Button href="/workouts/start" class="h-20 flex flex-col items-center justify-center space-y-2 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700">
+        <span class="text-2xl">🏃</span>
+        <span class="text-sm font-medium">Start Workout</span>
       </Button>
-      <Button href="/auth/register" variant="outline" size="lg" class="border-white text-white hover:bg-white/10">
-        Join Now
+      <Button href="/community" variant="outline" class="h-20 flex flex-col items-center justify-center space-y-2">
+        <span class="text-2xl">💬</span>
+        <span class="text-sm font-medium">Join Chat</span>
+      </Button>
+      <Button href="/progress" variant="outline" class="h-20 flex flex-col items-center justify-center space-y-2">
+        <span class="text-2xl">📊</span>
+        <span class="text-sm font-medium">Track Progress</span>
+      </Button>
+      <Button href="/trainers" variant="outline" class="h-20 flex flex-col items-center justify-center space-y-2">
+        <span class="text-2xl">👨‍🏫</span>
+        <span class="text-sm font-medium">Find Trainer</span>
       </Button>
     </div>
   </div>
-</section>
+{/if}
